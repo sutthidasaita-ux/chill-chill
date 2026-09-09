@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chill Caffe - Cute & Cozy Dining</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fcf9f2;
+            --surface-color: #ffffff;
+            --primary-color: #785a46;
+            --primary-dark: #4a3525;
+            --accent-color: #e09f3e;
+            --accent-pink: #ff6b6b;
+            --text-color: #3e322b;
+            --text-muted: #8c7a6b;
+            --border-color: #f0e6dc;
+            --shadow-cute: 0 10px 25px rgba(120, 90, 70, 0.08);
+            --shadow-hover: 0 15px 35px rgba(120, 90, 70, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 120px; }
+
+        /* หน้าแรกต้อนรับสุดน่ารัก */
+        #landing-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(74,53,37,0.75), rgba(74,53,37,0.75)), url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1400&q=80') center/cover;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; z-index: 1000;
+            padding: 20px; transition: opacity 0.5s ease;
+        }
+        #landing-page h1 { font-size: 3.8rem; margin-bottom: 8px; font-weight: 700; letter-spacing: 2px; color: var(--accent-color); text-shadow: 2px 3px 8px rgba(0,0,0,0.4); }
+        #landing-page p { font-size: 1.15rem; margin-bottom: 30px; font-weight: 300; color: #fceee3; max-width: 600px; line-height: 1.6; }
+        .enter-btn { 
+            background: linear-gradient(135deg, #e09f3e, #d88322); color: white; border: none; padding: 16px 45px; 
+            font-size: 1.2rem; border-radius: 50px; cursor: pointer; font-weight: 600; 
+            transition: all 0.3s; box-shadow: 0 8px 25px rgba(224, 159, 62, 0.4); 
+        }
+        .enter-btn:hover { transform: scale(1.06) rotate(-1deg); }
+
+        .top-container { max-width: 1200px; margin: 0 auto; padding: 25px 20px; }
+        .store-header { text-align: center; margin-bottom: 20px; }
+        .store-header h1 { font-size: 2.3rem; font-weight: 700; color: var(--primary-dark); letter-spacing: 1px; }
+        .store-header p { font-size: 0.92rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* แบนเนอร์โปรโมชั่นสไตล์คาเฟ่ */
+        .cafe-promo-banner {
+            background: linear-gradient(135deg, var(--primary-dark), #614532);
+            color: white; border-radius: 24px; padding: 25px 30px; margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: var(--shadow-cute); position: relative; overflow: hidden;
+        }
+        .cafe-promo-banner::after {
+            content: '☕'; position: absolute; right: -10px; bottom: -20px;
+            font-size: 7rem; opacity: 0.15; transform: rotate(-15deg);
+        }
+        .promo-text h2 { font-size: 1.5rem; color: var(--accent-color); margin-bottom: 6px; font-weight: 700; }
+        .promo-text p { font-size: 0.92rem; color: #f0e6dc; font-weight: 300; line-height: 1.5; }
+        .promo-btn {
+            background: var(--accent-color); color: var(--primary-dark); border: none;
+            padding: 10px 22px; border-radius: 30px; font-weight: 700; cursor: pointer;
+            font-size: 0.9rem; box-shadow: 0 4px 15px rgba(224, 159, 62, 0.4);
+            transition: transform 0.2s; z-index: 2;
+        }
+        .promo-btn:hover { transform: scale(1.05); }
+
+        /* ช่องค้นหา */
+        .search-box { margin-bottom: 25px; }
+        .search-box input { 
+            width: 100%; padding: 15px 22px; border-radius: 30px; 
+            border: 2px solid var(--border-color); outline: none; font-size: 0.95rem; 
+            background: var(--surface-color); color: var(--text-color); box-shadow: var(--shadow-cute); transition: all 0.3s;
+        }
+        .search-box input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 4px rgba(224, 159, 62, 0.15); }
+
+        /* หมวดหมู่สินค้าแบบ Visual Category Pills */
+        .categories { 
+            display: flex; gap: 14px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 30px; 
+            scrollbar-width: none; scroll-behavior: smooth;
+        }
+        .categories::-webkit-scrollbar { display: none; }
+        
+        .cat-btn { 
+            background: var(--surface-color); border: 2px solid var(--border-color); padding: 12px 22px; 
+            border-radius: 30px; white-space: nowrap; cursor: pointer; font-size: 0.95rem; 
+            color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 8px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 4px 12px rgba(120, 90, 70, 0.04);
+        }
+        .cat-btn span { font-size: 1.2rem; transition: transform 0.3s; display: inline-block; }
+        .cat-btn:hover { 
+            background: #fdf3e7; color: var(--primary-dark); border-color: var(--accent-color);
+            transform: translateY(-4px) scale(1.03); 
+            box-shadow: 0 8px 20px rgba(224, 159, 62, 0.25);
+        }
+        .cat-btn:hover span { transform: rotate(12deg) scale(1.15); }
+        .cat-btn.active { 
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); 
+            color: white; border-color: var(--primary-dark); font-weight: 700; 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 22px rgba(120, 90, 70, 0.3);
+        }
+        .cat-btn.active span { transform: scale(1.1); }
+
+        .section-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+
+        /* การ์ดเมนูอาหาร */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+        .menu-card { 
+            background: var(--surface-color); border-radius: 22px; overflow: hidden; 
+            box-shadow: var(--shadow-cute); border: 1px solid var(--border-color); 
+            display: flex; flex-direction: column; justify-content: space-between; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
+        }
+        .menu-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: var(--shadow-hover); }
+        
+        .badge { position: absolute; top: 12px; left: 12px; background: rgba(255, 255, 255, 0.92); color: var(--accent-pink); padding: 4px 12px; font-size: 0.72rem; border-radius: 12px; backdrop-filter: blur(4px); font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        .menu-img-container { overflow: hidden; height: 175px; position: relative; }
+        .menu-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .menu-card:hover .menu-img { transform: scale(1.08); }
+        
+        .menu-info { padding: 18px; }
+        .menu-info h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: var(--text-color); }
+        .menu-desc { font-size: 0.84rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; height: 38px; overflow: hidden; }
+        
+        .rating { font-size: 0.82rem; color: #e67e22; margin-bottom: 8px; font-weight: 600; }
+        .meta-info { font-size: 0.75rem; color: #b5a495; display: flex; gap: 12px; margin-bottom: 10px; }
+
+        .menu-footer { display: flex; justify-content: space-between; align-items: center; padding: 0 18px 18px 18px; }
+        .price { font-weight: 700; color: var(--primary-color); font-size: 1.2rem; }
+        .add-btn { 
+            background: #fdf3e7; color: var(--primary-color); border: none; 
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer; 
+            font-size: 1.4rem; display: flex; justify-content: center; align-items: center; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: bold;
+        }
+        .add-btn:hover { background: var(--accent-color); color: white; transform: scale(1.15) rotate(90deg); box-shadow: 0 4px 15px rgba(224, 159, 62, 0.4); }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.06); }
+        }
+        .bounce { animation: bounce 0.35s ease; }
+
+        /* ปุ่มเมนูลอยตัว (Floating Menu Button) มุมขวาล่าง */
+        .floating-menu-btn {
+            position: fixed; bottom: 95px; right: 20px; 
+            background: linear-gradient(135deg, #e09f3e, #d88322); color: white; 
+            width: 55px; height: 55px; border-radius: 50%; display: flex; 
+            justify-content: center; align-items: center; font-size: 1.6rem; 
+            box-shadow: 0 8px 25px rgba(224, 159, 62, 0.4); cursor: pointer; z-index: 95; 
+            transition: transform 0.2s; border: 2px solid white;
+        }
+        .floating-menu-btn:hover { transform: scale(1.1); }
+
+        /* ตะกร้าลอยด้านล่าง */
+        .floating-cart { 
+            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); 
+            width: 65%; max-width: 380px; background: var(--primary-dark); color: white; 
+            padding: 14px 22px; border-radius: 35px; display: flex; justify-content: space-between; 
+            align-items: center; box-shadow: 0 15px 30px rgba(74, 53, 37, 0.3); cursor: pointer; z-index: 99; display: none; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .floating-cart span { font-weight: 500; font-size: 1rem; }
+        .floating-cart span:last-child { color: var(--accent-color); font-weight: 700; }
+
+        /* Modal หน้าต่างเด้ง */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(62, 50, 43, 0.6); z-index: 200; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(4px); }
+        .modal-content { background: var(--surface-color); color: var(--text-color); width: 100%; max-width: 600px; max-height: 85vh; border-radius: 28px 28px 0 0; padding: 25px; overflow-y: auto; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        .modal-header h3 { color: var(--primary-dark); font-size: 1.25rem; }
+        .close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-muted); transition: color 0.2s; }
+        .close-modal:hover { color: var(--text-color); }
+        
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed var(--border-color); padding-bottom: 12px; }
+        .qty-control { display: flex; align-items: center; gap: 8px; }
+        .qty-control button { background: #fdf3e7; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--primary-color); }
+        
+        /* สไตล์เลือกระดับความหวาน */
+        .option-group { margin-bottom: 18px; }
+        .option-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--text-color); }
+        .option-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+        .chip { border: 1.5px solid var(--border-color); background: var(--bg-color); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; font-weight: 500; color: var(--text-muted); transition: all 0.2s; }
+        .chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: 600; }
+
+        .form-section { margin-top: 18px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; color: var(--text-color); }
+        .form-group input, .form-group textarea { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border-color); border-radius: 12px; outline: none; font-size: 0.95rem; background: var(--bg-color); color: var(--text-color); transition: border 0.2s; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-color); background: #fff; }
+        
+        .checkout-btn { background: linear-gradient(135deg, #e09f3e, #d88322); color: white; border: none; width: 100%; padding: 15px; border-radius: 14px; font-size: 1.1rem; font-weight: 600; margin-top: 15px; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 20px rgba(224, 159, 62, 0.3); }
+        .checkout-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+
+        .history-card { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+        .history-card h4 { color: var(--primary-dark); font-size: 1rem; margin-bottom: 6px; }
+        .history-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+
+        /* แจ้งเตือนแบบน่ารัก */
+        #custom-alert { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(62, 50, 43, 0.6); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .alert-box { background: var(--surface-color); padding: 30px; border-radius: 24px; width: 90%; max-width: 360px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15); animation: scaleUp 0.25s ease; }
+        @keyframes scaleUp { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .alert-btn { background: var(--primary-color); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 20px; }
+
+        /* เมนูด้านล่างสุด */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--surface-color); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 12px 0; z-index: 98; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
+        .nav-item { text-align: center; font-size: 0.72rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; flex: 1; }
+        .nav-item div:first-child { font-size: 1.35rem; margin-bottom: 2px; }
+        .nav-item.active, .nav-item:hover { color: var(--accent-color); font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <!-- หน้าแรกต้อนรับสุดน่ารัก -->
+    <div id="landing-page">
+        <h1>CHILL CAFFE 🧸</h1>
+        <p>✨ พื้นที่ความสุข ความหอมกรุ่นของกาแฟ และเบเกอรี่อบสดใหม่ พร้อมเสิร์ฟความอร่อยให้คุณแล้ววันนี้!</p>
+        <button class="enter-btn" onclick="enterShop()">🍯 เข้าสู่เมนู & สั่งอาหาร</button>
+    </div>
+
+    <div class="top-container">
+        <div class="store-header">
+            <h1>CHILL CAFFE ☕</h1>
+            <p>Crafted Drinks, Italian Soda & Homemade Bakery</p>
+        </div>
+
+        <!-- แบนเนอร์โปรโมชั่นสไตล์คาเฟ่ -->
+        <div class="cafe-promo-banner">
+            <div class="promo-text">
+                <h2>✨ โปรโมชั่นพิเศษต้อนรับคุณลูกค้า</h2>
+                <p>อิ่มอร่อยกับเบเกอรี่อบสดใหม่คู่กาแฟพรีเมียม หรือสดชื่นไปกับอิตาเลียนโซดา สั่งเลย!</p>
+            </div>
+            <button class="promo-btn" onclick="filterByQuick('recommend')">ดูเมนูแนะนำ</button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="🔍 ค้นหาเมนูอร่อย เช่น ลาเต้, บลูฮาวาย, ครัวซองต์, สเต็ก..." oninput="filterMenu()">
+        </div>
+
+        <!-- หมวดหมู่สินค้าแบบ Visual Category Pills -->
+        <div class="categories">
+            <button class="cat-btn active" onclick="filterByQuick('recommend')"><span>⭐</span> เมนูแนะนำ</button>
+            <button class="cat-btn" onclick="filterCategory('all', this)"><span>📋</span> เมนูทั้งหมด</button>
+            <button class="cat-btn" onclick="filterCategory('italian-soda', this)"><span>🍹</span> อิตาเลียนโซดา</button>
+            <button class="cat-btn" onclick="filterCategory('coffee', this)"><span>☕</span> กาแฟพรีเมียม</button>
+            <button class="cat-btn" onclick="filterCategory('drink', this)"><span>🧋</span> ชา & สมูทตี้</button>
+            <button class="cat-btn" onclick="filterCategory('food', this)"><span>🍽️</span> อาหาร & สเต็ก</button>
+            <button class="cat-btn" onclick="filterCategory('bakery', this)"><span>🥐</span> เบเกอรี่อบสด</button>
+            <button class="cat-btn" onclick="filterCategory('dessert', this)"><span>🍰</span> ของหวานฟินๆ</button>
+        </div>
+
+        <div class="section-title" id="section-title-text">🌟 เมนูแนะนำยอดฮิตประจำร้าน</div>
+        <div class="menu-grid" id="menu-container"></div>
+    </div>
+
+    <!-- ปุ่มเมนูลอยตัว (Floating Menu Button ☰) มุมขวาล่าง -->
+    <div class="floating-menu-btn" onclick="openPopupMenuModal()" title="เมนูลัดหมวดหมู่">
+        ☰
+    </div>
+
+    <!-- แถบตะกร้าลอยด้านล่าง -->
+    <div class="floating-cart" id="floating-cart" onclick="openCartModal()">
+        <span id="cart-count">🛒 0 รายการ</span>
+        <span id="cart-total">0 ฿</span>
+    </div>
+
+    <!-- Modal เลือกระดับความหวาน (เฉพาะเครื่องดื่ม/น้ำ) -->
+    <div class="modal" id="sweetness-modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3 id="sweetness-item-name">เลือกระดับความหวาน</h3>
+                <button class="close-modal" onclick="closeSweetnessModal()">&times;</button>
+            </div>
+            <div class="option-group">
+                <label>ระดับความหวาน:</label>
+                <div class="option-chips" id="sweetness-options">
+                    <div class="chip active" onclick="selectSweetnessOption('หวานปกติ (100%)', this)">หวานปกติ (100%)</div>
+                    <div class="chip" onclick="selectSweetnessOption('หวานน้อย (50%)', this)">หวานน้อย (50%)</div>
+                    <div class="chip" onclick="selectSweetnessOption('ไม่หวาน (0%)', this)">ไม่หวาน (0%)</div>
+                </div>
+            </div>
+            <button class="checkout-btn" onclick="confirmSweetnessAndAdd()">✨ เพิ่มลงตะกร้า</button>
+        </div>
+    </div>
+
+    <!-- Modal เมนูลัดหมวดหมู่ (Popup Menu Categories) -->
+    <div class="modal" id="popup-menu-modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3>📋 เมนูลัดเลือกหมวดหมู่</h3>
+                <button class="close-modal" onclick="closePopupMenuModal()">&times;</button>
+            </div>
+            <div class="popup-menu-grid">
+                <div class="popup-menu-item" onclick="selectPopupCategory('recommend')">
+                    <div class="icon">⭐</div>
+                    <div class="name">เมนูแนะนำ</div>
+                </div>
+                <div class="popup-menu-item" onclick="selectPopupCategory('all')">
+                    <div class="icon">📋</div>
+                    <div class="name">เมนูทั้งหมด</div>
+                </div>
+                <div class="popup-menu-item" onclick="selectPopupCategory('italian-soda')">
+                    <div class="icon">🍹</div>
+                    <div class="name">อิตาเลียนโซดา</div>
+                </div>
+                <div class="popup-menu-item" onclick="selectPopupCategory('coffee')">
+                    <div class="icon">☕</div>
+                    <div class="name">กาแฟพรีเมียม</div>
+                </div>
+                <div class="popup-menu-item" onclick="selectPopupCategory('drink')">
+                    <div class="icon">🧋</div>
+                    <div class="name">ชา & สมูทตี้</div>
+                </div>
+                <div class="popup-menu-item" onclick="selectPopupCategory('food')">
+                    <div class="icon">🍽️</div>
+                    <div class="name">อาหาร & สเต็ก</div>
+                </div>
+                <div class="popup-menu-item" onclick="selectPopupCategory('bakery')">
+                    <div class="icon">🥐</div>
+                    <div class="name">เบเกอรี่อบสด</div>
+                </div>
+                <div class="popup-menu-item" onclick="selectPopupCategory('dessert')">
+                    <div class="icon">🍰</div>
+                    <div class="name">ของหวานฟินๆ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ตะกร้าสินค้า -->
+    <div class="modal" id="cart-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🛒 ตะกร้าสินค้าของคุณ</h3>
+                <button class="close-modal" onclick="closeCartModal()">&times;</button>
+            </div>
+            <div id="cart-items-container"></div>
+            <div style="text-align: right; font-weight: bold; font-size: 1.2rem; margin-top: 15px; color: var(--accent-color);" id="modal-total">
+                ยอดรวม: 0 ฿
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label>หมายเลขโต๊ะ (สแกนจาก QR Code):</label>
+                    <input type="text" id="cust-table" readonly style="background: #f0e6dc; font-weight: bold; color: var(--primary-color);">
+                </div>
+                <div class="form-group">
+                    <label>โน๊ตเพิ่มเติมถึงเชฟ / ระบุข้อความ:</label>
+                    <textarea id="cust-note" rows="2" placeholder="เช่น ไม่ใส่ผัก, เผ็ดน้อย, ขอซอสเพิ่ม"></textarea>
+                </div>
+                <button class="checkout-btn" onclick="confirmOrder()">✨ ยืนยันคำสั่งซื้อ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ประวัติคำสั่งซื้อ -->
+    <div class="modal" id="history-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📜 ประวัติคำสั่งซื้อทั้งหมด</h3>
+                <button class="close-modal" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            <div id="history-items-container"></div>
+            <button class="alert-btn" onclick="closeHistoryModal()" style="margin-top: 15px;">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+
+    <!-- Custom Alert Popup -->
+    <div id="custom-alert">
+        <div class="alert-box">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">🧸</div>
+            <h3 style="color: var(--primary-dark); margin-bottom: 6px;" id="alert-title">แจ้งเตือน</h3>
+            <p id="alert-message" style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.5;"></p>
+            <button class="alert-btn" onclick="closeCustomAlert()">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- แถบเมนูด้านล่างสุด -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <div>🏠</div>
+            <div>เมนู</div>
+        </div>
+        <div class="nav-item" onclick="openCartModal()">
+            <div>🛒</div>
+            <div>ตะกร้า</div>
+        </div>
+        <div class="nav-item" onclick="openHistoryModal()">
+            <div>📜</div>
+            <div>ประวัติ</div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            // --- เมนูแนะนำยอดฮิต (หน้าแรก) ---
+            { id: 101, name: 'บลูฮาวาย อิตาเลียนโซดา', category: 'italian-soda', isDrink: true, price: 85, desc: 'โซดาสุดซ่าผสานกลิ่นบลูฮาวายและเลมอนสดชื่นขั้นสุด', rating: '⭐ 5.0 (190)', time: '3 นาที', people: '840 คน', badge: 'SIGNATURE', recommend: true, img: 'https://cdn.phototourl.com/free/2026-09-09-9327e636-b6e4-434e-bde5-89caf03cb12f.jpg' },
+            { id: 1, name: 'ซิกเนเจอร์ ดริป คอฟฟี่', category: 'coffee', isDrink: true, price: 85, desc: 'เมล็ดกาแฟคั่วพิเศษ หอมกลิ่นฟรุตตี้และดอกไม้อ่อนๆ', rating: '⭐ 4.9 (142)', time: '4 นาที', people: '956 คน', badge: 'SIGNATURE', recommend: true, img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80' },
+            { id: 10, name: 'สเต็กเนื้อริบอายซอสทรัฟเฟิล', category: 'food', isDrink: false, price: 280, desc: 'เนื้อริบอายพรีเมียมย่างความสุกกำลังดี ราดซอสทรัฟเฟิลหอมกรุ่น', rating: '⭐ 5.0 (510)', time: '20 นาที', people: '1420 คน', badge: 'CHEF\'S CHOICE', recommend: true, img: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&q=80' },
+            { id: 15, name: 'พรีเมียม อัลมอนด์ ครัวซองต์', category: 'bakery', isDrink: false, price: 85, desc: 'ครัวซองต์เนยแท้นำเข้า สอดไส้อัลมอนด์ครีม หอมกรุ่นจากเตา', rating: '⭐ 5.0 (420)', time: '5 นาที', people: '1250 คน', badge: 'BEST', recommend: true, img: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=500&q=80' },
+            { id: 18, name: 'เบาส์ก์ ชีสเค้กหน้าไหม้', category: 'dessert', isDrink: false, price: 110, desc: 'ชีสเค้กเนื้อเนียนนุ่มละลายในปาก หอมกลิ่นไหม้อ่อนๆ', rating: '⭐ 5.0 (610)', time: '3 นาที', people: '1580 คน', badge: 'SIGNATURE', recommend: true, img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=500&q=80' },
+            { id: 6, name: 'มัทฉะพรีเมียม อูจิ', category: 'drink', isDrink: true, price: 95, desc: 'ชาเขียวมัทฉะแท้นำเข้าเกรดพิธีการจากเกียวโต', rating: '⭐ 5.0 (250)', time: '4 นาที', people: '1140 คน', badge: 'SIGNATURE', recommend: true, img: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=500&q=80' },
+            { id: 301, name: 'ชานมไข่มุกไต้หวัน', category: 'drink', isDrink: true, price: 75, desc: 'ชานมสูตรต้นตำรับไต้หวันพร้อมไข่มุกนุ่มหนึบเคี้ยวเพลิน', rating: '⭐ 4.9 (530)', time: '4 นาที', people: '1450 คน', badge: 'HIT', recommend: true, img: 'https://images.unsplash.com/photo-1558857563-b371033873b8?auto=format&fit=crop&w=500&q=80' },
+            { id: 401, name: 'สเต็กหมูคุโรบูตะพริกไทยดำ', category: 'food', isDrink: false, price: 199, desc: 'พอร์คชอปหมูคุโรบูตะนุ่มฉ่ำราดซอสพริกไทยดำเข้มข้น', rating: '⭐ 4.9 (410)', time: '15 นาที', people: '1050 คน', badge: 'RECOMMEND', recommend: true, img: 'https://images.unsplash.com/photo-1432139555190-58524dae6a55?auto=format&fit=crop&w=500&q=80' },
+
+            // --- หมวดอิตาเลียนโซดา ---
+            { id: 102, name: 'สตรอเบอร์รี่ เลมอนโซดา', category: 'italian-soda', isDrink: true, price: 85, desc: 'ซอสสตรอเบอร์รี่โฮมเมดตัดเปรี้ยวด้วยเลมอนสดชื่น', rating: '⭐ 4.9 (210)', time: '3 นาที', people: '910 คน', badge: 'POPULAR', recommend: false, img: 'https://cdn.phototourl.com/member/2026-09-09-63b325cc-f8e0-4acf-a98e-18f7f2aca9af.jpg' },
+            { id: 103, name: 'ลิ้นจี่ กุหลาบโซดา', category: 'italian-soda', isDrink: true, price: 95, desc: 'ความหอมละมุนของกุหลาบผสมผสานเนื้อลิ้นจี่หวานฉ่ำ', rating: '⭐ 5.0 (320)', time: '3 นาที', people: '1150 คน', badge: 'RECOMMEND', recommend: false, img: 'https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=500&q=80' },
+            { id: 104, name: 'พีช แอคคิวท์ โซดา', category: 'italian-soda', isDrink: true, price: 90, desc: 'พีชหอมหวานละมุนซ่าสะใจ ดับกระหายได้ดีเยี่ยม', rating: '⭐ 4.8 (175)', time: '3 นาที', people: '630 คน', badge: 'NEW', recommend: false, img: 'https://cdn.phototourl.com/member/2026-09-09-61bf8f77-9571-499c-bc48-7ede962dd47f.jpg' },
+            { id: 105, name: 'แอปเปิ้ลเขียว โซดาซ่า', category: 'italian-soda', isDrink: true, price: 85, desc: 'ไซรัปแอปเปิ้ลเขียวหอมหวานเปรี้ยวซ่ากำลังดี', rating: '⭐ 4.7 (140)', time: '3 นาที', people: '520 คน', badge: '', recommend: false, img: 'https://cdn.phototourl.com/member/2026-09-09-0ecc6e65-b402-41a7-91de-7c69475cb5db.jpg' },
+
+            // --- หมวดกาแฟพรีเมียม ---
+            { id: 2, name: 'เอสเปรสโซ่ คอนปานา', category: 'coffee', isDrink: true, price: 65, desc: 'ช็อตเอสเปรสโซ่เข้มข้นท็อปด้วยวิปครีมนุ่มละมุน', rating: '⭐ 4.8 (98)', time: '3 นาที', people: '623 คน', badge: 'HOT', recommend: false, img: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=500&q=80' },
+            { id: 3, name: 'พรีเมียม คาปูชิโน่', category: 'coffee', isDrink: true, price: 75, desc: 'กาแฟผสมนมฟองนมนุ่ม โรยผงโกโก้พรีเมียม', rating: '⭐ 4.9 (234)', time: '5 นาที', people: '1205 คน', badge: 'RECOMMEND', recommend: false, img: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=500&q=80' },
+            { id: 4, name: 'วานิลลา คาราเมล ลาเต้', category: 'coffee', isDrink: true, price: 80, desc: 'หอมกลิ่นวานิลลาและคาราเมลเคี่ยวสด กลมกล่อมลงตัว', rating: '⭐ 4.7 (180)', time: '4 นาที', people: '890 คน', badge: 'BEST', recommend: false, img: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=500&q=80' },
+            { id: 201, name: 'มอคค่า ช็อกโกแลตเข้มข้น', category: 'coffee', isDrink: true, price: 80, desc: 'เอสเปรสโซ่ผสมดาร์กช็อกโกแลตแท้ หวานกลมกล่อม', rating: '⭐ 4.8 (210)', time: '4 นาที', people: '740 คน', badge: '', recommend: false, img: 'https://cdn.phototourl.com/free/2026-09-09-10e6c907-5b91-437b-8463-990ee5343609.jpg' },
+
+            // --- หมวดชา & สมูทตี้ ---
+            { id: 7, name: 'ชานมไทยพรีเมียม', category: 'drink', isDrink: true, price: 65, desc: 'ชาไทยกลิ่นหอมละมุน ท็อปด้วยฟองนมหนานุ่ม', rating: '⭐ 4.8 (215)', time: '3 นาที', people: '930 คน', badge: '', recommend: false, img: 'https://cdn.phototourl.com/member/2026-09-09-168c11fd-84bd-423e-9799-3449890eedf9.jpg' },
+            { id: 8, name: 'ดาร์กโกโก้ วัลเลย์', category: 'drink', isDrink: true, price: 75, desc: 'โกโก้เข้มข้นพิเศษจากเบลเยียม หวานน้อยกลมกล่อม', rating: '⭐ 4.9 (195)', time: '4 นาที', people: '650 คน', badge: 'POPULAR', recommend: false, img: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=500&q=80' },
+            { id: 302, name: 'สมูทตี้สตรอเบอร์รี่โยเกิร์ต', category: 'drink', isDrink: true, price: 95, desc: 'สตรอเบอร์รี่สดปั่นเนียนนุ่มผสมโยเกิร์ตแท้เปรี้ยวหวานลงตัว', rating: '⭐ 4.9 (310)', time: '5 นาที', people: '890 คน', badge: 'RECOMMEND', recommend: false, img: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=500&q=80' },
+
+            // --- หมวดอาหาร & สเต็ก ---
+            { id: 11, name: 'สปาเก็ตตี้เบคอนเบิร์นไฟไวท์ซอส', category: 'food', isDrink: false, price: 145, desc: 'เส้นสปาเก็ตตี้เหนียวนุ่มคลุกเคล้าครีมชีสและเบคอนเบิร์นหอมๆ', rating: '⭐ 4.9 (380)', time: '12 นาที', people: '920 คน', badge: 'RECOMMEND', recommend: false, img: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=500&q=80' },
+            { id: 12, name: 'ข้าวหน้าเนื้อย่างไข่ดองซอสญี่ปุ่น', category: 'food', isDrink: false, price: 159, desc: 'เนื้อสไลด์ย่างพรีเมียมโปะบนข้าวญี่ปุ่นร้อนๆ พร้อมไข่ดองซอส', rating: '⭐ 4.8 (290)', time: '12 นาที', people: '810 คน', badge: 'BEST', recommend: false, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=500&q=80' },
+            { id: 403, name: 'สปาเก็ตตี้คาโบนาร่าไข่กุ้ง', category: 'food', isDrink: false, price: 159, desc: 'คาโบนาร่าสูตรเข้มข้นโรยไข่กุ้งกรุบกรอบล้นจาน', rating: '⭐ 4.9 (340)', time: '12 นาที', people: '910 คน', badge: 'POPULAR', recommend: false, img: 'https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=500&q=80' },
+
+            // --- หมวดเบเกอรี่อบสด ---
+            { id: 501, name: 'ช็อกโกแลต เลิฟเวอร์ ครัวซองต์', category: 'bakery', isDrink: false, price: 89, desc: 'ครัวซองต์เนยสดสอดไส้และเคลือบดาร์กช็อกโกแลตเยิ้มๆ', rating: '⭐ 4.9 (310)', time: '5 นาที', people: '890 คน', badge: 'BEST', recommend: false, img: 'https://cdn.phototourl.com/member/2026-09-09-2d4546f0-666c-404f-ba80-51e61a6c0003.jpg' },
+            { id: 502, name: 'ซินนามอน โรล นุ่มละมุน', category: 'bakery', isDrink: false, price: 79, desc: 'ขนมปังอบซินนามอนหอมกรุ่นราดครีมชีสฟรอสติ้งหวานฉ่ำ', rating: '⭐ 4.8 (220)', time: '5 นาที', people: '640 คน', badge: '', recommend: false, img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=500&q=80' },
+
+            // --- หมวดของหวานฟินๆ ---
+            { id: 19, name: 'พรีเมียม ฮันนีโทสต์ โฮมเมด', category: 'dessert', isDrink: false, price: 159, desc: 'ขนมปังหนานุ่มฉ่ำเนยแท้ เสิร์ฟคู่ไอศกรีมวานิลลาและผลไม้สด', rating: '⭐ 4.9 (490)', time: '10 นาที', people: '1100 คน', badge: 'RECOMMEND', recommend: false, img: 'https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=500&q=80' },
+            { id: 21, name: 'บิงซูรอยัลเมล่อนญี่ปุ่น', category: 'dessert', isDrink: false, price: 189, desc: 'เกล็ดหิมะนมสดเนื้อเนียนนุ่ม ท็อปด้วยเมล่อนญี่ปุ่นหวานฉ่ำเต็มคำ', rating: '⭐ 5.0 (720)', time: '10 นาที', people: '1450 คน', badge: 'HIT', recommend: false, img: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80' },
+            { id: 603, name: 'เค้กช็อกโกแลตหน้านิ่ม', category: 'dessert', isDrink: false, price: 95, desc: 'ช็อกโกแลตเค้กเนื้อนุ่มราดซอสช็อกโกแลตเยิ้มเข้มข้นสะใจ', rating: '⭐ 4.9 (440)', time: '3 นาที', people: '1150 คน', badge: 'BEST', recommend: false, img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80' }
+        ];
+
+        let cart = [];
+        let currentCategory = 'recommend';
+        let detectedTable = 'โต๊ะ 1'; // ค่าเริ่มต้นกรณีไม่ได้สแกน QR Code
+        let selectedProductForSweetness = null;
+        let currentSelectedSweetness = 'หวานปกติ (100%)';
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tableParam = urlParams.get('table');
+            if (tableParam) {
+                detectedTable = 'โต๊ะ ' + tableParam;
+            }
+
+            filterByQuick('recommend');
+        }
+
+        function enterShop() {
+            const landing = document.getElementById('landing-page');
+            landing.style.opacity = '0';
+            setTimeout(() => landing.style.display = 'none', 500);
+        }
+
+        function showCustomAlert(title, message) {
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-message').innerText = message;
+            document.getElementById('custom-alert').style.display = 'flex';
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('custom-alert').style.display = 'none';
+        }
+
+        function renderMenu(items, titleText) {
+            const container = document.getElementById('menu-container');
+            document.getElementById('section-title-text').innerText = titleText;
+
+            if (items.length === 0) {
+                container.innerHTML = '<p style="grid-column: span 3; text-align: center; color: var(--text-muted); padding: 40px;">ไม่พบเมนูที่คุณค้นหา</p>';
+                return;
+            }
+            container.innerHTML = items.map(item => `
+                <div class="menu-card">
+                    ${item.badge ? `<div class="badge">${item.badge}</div>` : ''}
+                    <div class="menu-img-container"><img src="${item.img}" class="menu-img" alt="${item.name}"></div>
+                    <div class="menu-info">
+                        <h3>${item.name}</h3>
+                        <p class="menu-desc">${item.desc}</p>
+                        <div class="rating">${item.rating}</div>
+                        <div class="meta-info">
+                            <span>⏱️ ${item.time}</span>
+                            <span>👤 ${item.people}</span>
+                        </div>
+                    </div>
+                    <div class="menu-footer">
+                        <span class="price">${item.price} ฿</span>
+                        <button class="add-btn" onclick="handleAddToCart(${item.id})">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterByQuick(type) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            currentCategory = type;
+
+            if (type === 'recommend') {
+                const btns = document.querySelectorAll('.cat-btn');
+                if(btns.length > 0) btns[0].classList.add('active');
+
+                const recItems = products.filter(p => p.recommend);
+                renderMenu(recItems, '🌟 เมนูแนะนำยอดฮิตประจำร้าน');
+            } else if (type === 'italian-soda') {
+                const sodaItems = products.filter(p => p.category === 'italian-soda');
+                renderMenu(sodaItems, '🍹 เมนูอิตาเลียนโซดาซ่าสดชื่น');
+            } else if (type === 'bakery') {
+                const bakeryItems = products.filter(p => p.category === 'bakery');
+                renderMenu(bakeryItems, '🥐 เบเกอรี่อบสดใหม่จากเตา');
+            } else if (type === 'dessert') {
+                const dessertItems = products.filter(p => p.category === 'dessert');
+                renderMenu(dessertItems, '🍰 ของหวานฟินๆ ละมุนลิ้น');
+            }
+        }
+
+        function filterCategory(category, btn) {
+            currentCategory = category;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            let filtered = [];
+            let title = '📋 รายการเมนูทั้งหมด';
+
+            if (category === 'all') {
+                filtered = products;
+                title = '✨ เมนูอร่อยทั้งหมดของร้าน';
+            } else {
+                filtered = products.filter(item => item.category === category);
+                title = `📂 หมวดหมู่: ${btn.innerText}`;
+            }
+            renderMenu(filtered, title);
+        }
+
+        function filterMenu() {
+            const keyword = document.getElementById('search-input').value.toLowerCase();
+            const filtered = products.filter(item => {
+                const matchKeyword = item.name.toLowerCase().includes(keyword) || item.desc.toLowerCase().includes(keyword);
+                return matchKeyword;
+            });
+            renderMenu(filtered, `🔍 ผลการค้นหา: "${keyword}"`);
+        }
+
+        function openPopupMenuModal() {
+            document.getElementById('popup-menu-modal').style.display = 'flex';
+        }
+        function closePopupMenuModal() {
+            document.getElementById('popup-menu-modal').style.display = 'none';
+        }
+        function selectPopupCategory(type) {
+            closePopupMenuModal();
+            if (type === 'recommend') {
+                filterByQuick('recommend');
+            } else {
+                const btns = document.querySelectorAll('.cat-btn');
+                btns.forEach(b => {
+                    if ((type === 'all' && b.innerText.includes('เมนูทั้งหมด')) ||
+                        (type === 'italian-soda' && b.innerText.includes('อิตาเลียนโซดา')) ||
+                        (type === 'coffee' && b.innerText.includes('กาแฟ')) ||
+                        (type === 'drink' && b.innerText.includes('ชา')) ||
+                        (type === 'food' && b.innerText.includes('อาหาร')) ||
+                        (type === 'bakery' && b.innerText.includes('เบเกอรี่')) ||
+                        (type === 'dessert' && b.innerText.includes('ของหวาน'))) {
+                        b.click();
+                    }
+                });
+            }
+        }
+
+        function handleAddToCart(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            if (product.isDrink) {
+                selectedProductForSweetness = product;
+                currentSelectedSweetness = 'หวานปกติ (100%)';
+                
+                const chips = document.querySelectorAll('#sweetness-options .chip');
+                chips.forEach((c, idx) => {
+                    if (idx === 0) c.classList.add('active');
+                    else c.classList.remove('active');
+                });
+
+                document.getElementById('sweetness-item-name').innerText = `เลือกระดับความหวาน: ${product.name}`;
+                document.getElementById('sweetness-modal').style.display = 'flex';
+            } else {
+                addDirectToCart(product, '');
+            }
+        }
+
+        function selectSweetnessOption(val, element) {
+            currentSelectedSweetness = val;
+            document.querySelectorAll('#sweetness-options .chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function closeSweetnessModal() {
+            document.getElementById('sweetness-modal').style.display = 'none';
+        }
+
+        function confirmSweetnessAndAdd() {
+            if (selectedProductForSweetness) {
+                addDirectToCart(selectedProductForSweetness, currentSelectedSweetness);
+                closeSweetnessModal();
+            }
+        }
+
+        function addDirectToCart(product, sweetness) {
+            const displayName = sweetness ? `${product.name} (${sweetness})` : product.name;
+            const found = cart.find(item => item.displayName === displayName);
+            
+            if (found) {
+                found.qty += 1;
+            } else {
+                cart.push({ ...product, displayName, qty: 1 });
+            }
+
+            updateCartUI();
+
+            const floatCart = document.getElementById('floating-cart');
+            floatCart.classList.add('bounce');
+            setTimeout(() => floatCart.classList.remove('bounce'), 350);
+        }
+
+        function updateCartUI() {
+            const floatCart = document.getElementById('floating-cart');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            const itemsContainer = document.getElementById('cart-items-container');
+            const modalTotal = document.getElementById('modal-total');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            if (totalItems > 0) {
+                floatCart.style.display = 'flex';
+                cartCount.innerText = `🛒 ${totalItems} รายการ`;
+                cartTotal.innerText = `${totalPrice} ฿`;
+            } else {
+                floatCart.style.display = 'none';
+            }
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">ยังไม่มีสินค้าในตะกร้า</p>';
+                modalTotal.innerText = 'ยอดรวม: 0 ฿';
+                return;
+            }
+
+            itemsContainer.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div>
+                        <strong>${item.displayName}</strong><br>
+                        <small style="color:var(--accent-color); font-weight:600;">${item.price} ฿ x ${item.qty} = ${item.price * item.qty} ฿</small>
+                    </div>
+                    <div class="qty-control">
+                        <button onclick="changeQty(${index}, -1)">-</button>
+                        <span>${item.qty}</span>
+                        <button onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+            modalTotal.innerText = `ยอดรวม: ${totalPrice} ฿`;
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function openCartModal() {
+            if (cart.length === 0) {
+                showCustomAlert('แจ้งเตือน', 'กรุณาเลือกเมนูก่อนครับ!');
+                return;
+            }
+            document.getElementById('cust-table').value = detectedTable;
+            document.getElementById('cart-modal').style.display = 'flex';
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').style.display = 'none';
+        }
+
+        function openHistoryModal() {
+            const historyContainer = document.getElementById('history-items-container');
+            const savedHistory = JSON.parse(localStorage.getItem('cafe_orders')) || [];
+
+            if (savedHistory.length === 0) {
+                historyContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">ยังไม่มีประวัติการสั่งซื้อ</p>';
+            } else {
+                historyContainer.innerHTML = savedHistory.map(order => `
+                    <div class="history-card">
+                        <h4>📅 ${order.date} <span style="float: right; color: var(--accent-color);">⏳ ${order.status}</span></h4>
+                        <p><b>โต๊ะ:</b> ${order.table}</p>
+                        <p><b>รายการ:</b> ${order.itemsSummary}</p>
+                        <p style="color: var(--accent-color); font-weight: bold; margin-top: 4px;">ยอดรวม: ${order.totalPrice} ฿</p>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('history-modal').style.display = 'flex';
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('history-modal').style.display = 'none';
+        }
+
+        function confirmOrder() {
+            const note = document.getElementById('cust-note').value;
+
+            let total = 0;
+            let itemsSummaryArray = [];
+
+            cart.forEach(item => {
+                let sum = item.price * item.qty;
+                total += sum;
+                itemsSummaryArray.push(`${item.displayName} x${item.qty}`);
+            });
+
+            if (note) {
+                itemsSummaryArray.push(`[โน๊ต/ระบุข้อความ: ${note}]`);
+            }
+
+            const newOrder = {
+                date: new Date().toLocaleString('th-TH'),
+                table: detectedTable,
+                itemsSummary: itemsSummaryArray.join(', '),
+                totalPrice: total,
+                status: 'กำลังเตรียมอาหาร 👨‍🍳'
+            };
+
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzoAqPD5wR43QXqtw9b_4RVwDbplAmqE7QFdVEL6DiddKVcGPRQF8vo79edXhhXKLMd/exec'; 
+            
+            if (scriptURL && scriptURL.includes('/exec')) {
+                fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newOrder)
+                }).catch(error => console.error('Error!', error.message));
+            }
+
+            let existingHistory = JSON.parse(localStorage.getItem('cafe_orders')) || [];
+            existingHistory.unshift(newOrder);
+            localStorage.setItem('cafe_orders', JSON.stringify(existingHistory));
+
+            cart = [];
+            updateCartUI();
+            closeCartModal();
+
+            showCustomAlert('🎉 สั่งซื้อสำเร็จ!', `ส่งออเดอร์สำหรับ (${detectedTable}) ไปที่ห้องครัวเรียบร้อยแล้ว!`);
+        }
+    </script>
+</body>
+</html>
