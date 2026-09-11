@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบแจ้งเตือนออเดอร์ - Chill Caffe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; background: #fcf9f2; text-align: center; padding-top: 50px; }
+        .alert-box { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 400px; width: 90%; }
+        h2 { color: #4a3525; }
+        .status { font-size: 1.1rem; color: #e09f3e; font-weight: 600; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="alert-box">
+        <h2>👨‍🍳 ระบบแจ้งเตือนออเดอร์ Chill Caffe</h2>
+        <p>เปิดหน้าจอนี้ทิ้งไว้ที่เคาน์เตอร์หรือในครัวเพื่อรอรับเสียงแจ้งเตือนออเดอร์ใหม่</p>
+        <div class="status" id="status-text">🟢 กรุณากดปุ่มเปิดเสียงด้านล่างเพื่อเริ่มทำงาน</div>
+        <button onclick="enableSound()" style="margin-top: 20px; padding: 12px 24px; background: #785a46; color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: bold;">🔊 เปิดใช้งานเสียงเตือน</button>
+    </div>
+
+    <script>
+        let lastRowCount = 0;
+        
+        // 🔴 นำ URL Web App ของคุณมาใส่ไว้ในเครื่องหมายคำพูดนี้
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbzoAqPD5wR43QXqtw9b_4RVwDbplAmqE7QFdVEL6DiddKVcGPRQF8vo79edXhhXKLMd/exec"; 
+
+        function enableSound() {
+            // กระตุ้นเสียงพูดของเบราว์เซอร์ครั้งแรกเพื่อให้ระบบปลดล็อกการเล่นเสียง
+            speakText("ระบบเปิดใช้งานเสียงเตือนเรียบร้อยแล้วค่ะ");
+            checkNewOrder();
+            setInterval(checkNewOrder, 10000); // เช็กข้อมูลทุกๆ 10 วินาที
+        }
+
+        // ฟังก์ชันสำหรับสั่งให้เบราว์เซอร์พูดออกเสียงภาษาไทย
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                // หยุดเสียงที่ค้างอยู่ก่อนหน้า
+                window.speechSynthesis.cancel();
+                
+                let utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'th-TH'; // ตั้งค่าภาษาไทย
+                utterance.rate = 1.0;   // ความเร็วในการพูด (1.0 คือปกติ)
+                utterance.pitch = 1.1;  // ระดับเสียง (ปรับให้ฟังดูสดใสขึ้นนิดหน่อย)
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function checkNewOrder() {
+            fetch(webAppUrl)
+                .then(response => response.text())
+                .then(rowCount => {
+                    let currentRow = parseInt(rowCount);
+                    if (lastRowCount === 0) {
+                        lastRowCount = currentRow;
+                        document.getElementById('status-text').innerText = "🟢 ระบบพร้อมทำงาน (กำลังรออเดอร์...)";
+                    } else if (currentRow > lastRowCount) {
+                        lastRowCount = currentRow;
+                        
+                        // 🗣️ สั่งให้คอมพิวเตอร์/มือถือพูดประโยคนี้ออกมาทันทีที่มีออเดอร์ใหม่!
+                        speakText("มีออเดอร์ใหม่เข้ามาแล้วค่ะ กรุณาตรวจสอบรายการ");
+                        
+                        document.getElementById('status-text').innerText = "🔔 มีออเดอร์ใหม่เข้ามาแล้ว!";
+                        
+                        if (Notification.permission === "granted") {
+                            new Notification("Chill Caffe", { body: "มีออเดอร์ใหม่เข้ามาแล้วค่ะ!" });
+                        }
+                    }
+                })
+                .catch(error => console.log('Error checking orders:', error));
+        }
+
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+    </script>
+</body>
+</html>
